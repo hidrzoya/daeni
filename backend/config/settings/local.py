@@ -1,0 +1,43 @@
+from pathlib import Path
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR / ".env.local", override=True)
+
+from .base import *  # noqa: F401,F403
+
+DEBUG = True
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+# A fresh local checkout should be able to run Django commands without a
+# PostgreSQL service.  Provide DB_* values in .env.local to use PostgreSQL.
+if not os.getenv("DB_NAME") and not os.getenv("DATABASE_URL"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+            "HOST": os.getenv("DB_HOST"),
+            "PORT": os.getenv("DB_PORT", "5432"),
+            "OPTIONS": {
+                "sslmode": os.getenv("DB_SSLMODE", "disable"),
+            }
+        }
+    }
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost", "http://127.0.0.1"]
+
+AZURE_AD_REDIRECT_URI = os.getenv("AZURE_AD_REDIRECT_URI", "")
+
+POST_LOGOUT_REDIRECT_URI = os.getenv("POST_LOGOUT_REDIRECT_URI", "")
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+REACT_APP_URL = os.getenv("REACT_APP_URL", "")
